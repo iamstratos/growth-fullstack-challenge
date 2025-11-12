@@ -2,8 +2,8 @@
 
 Hi :wave:
 
-This repository contains a technical challenge for a full-stack engineering
-role in the Growth department at Famly.
+This repository contains a technical challenge for engineering
+roles in the Growth department at Famly.
 
 ## Expectations
 
@@ -23,7 +23,7 @@ time to discuss potential solutions or potentially do some light
 pair programming together. The main purpose here is for us to get a sense
 for whether we're a good collaboration match - both for us and for you. We're
 also interested in understanding your ability to communicate your ideas while
-you're walking us through your solution and potential improvements you'd make
+you're walking us through your solution and learn about potential improvements you'd make
 if you'd have more time.
 
 ## Instructions
@@ -31,12 +31,10 @@ if you'd have more time.
 1. Start by forking this repository
 2. Decide whether you want to solve the backend parts of this challenge in Scala
    or in NodeJS
-3. Solve the [exercises](#exercises) below.
-4. If you want to write something about your solutions to the exercise,
-   please do so in the [answers.md](answers.md) file.
-5. For each question you answer, please create a commit and push them
-   to the main branch. Remember to include a helpful commit message.
-6. When you're done, send us an email with the link to the forked repository
+3. Solve the [exercises](#exercises) below. Code what you can, and write your thoughts for the exercises you couldn't solve in the [answers.md](answers.md) file. 
+4. For each question you answer, please create a commit and push them
+   to the main branch. **Remember to include a helpful commit message**.
+5. When you're done, send us an email with the link to the forked repository. If you prefer not to fork it, you can also zip your solution and send it via email. 
 
 Feel free to reach out with any questions before starting the challenge via email: <bis@famly.co>
 
