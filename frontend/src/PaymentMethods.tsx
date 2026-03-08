@@ -29,6 +29,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   listItem: {
     display: "flex",
+    flexWrap: "wrap" as const,
     justifyContent: "space-between",
     alignItems: "center",
     backgroundColor: "white",
@@ -36,6 +37,14 @@ const useStyles = makeStyles((theme: Theme) => ({
     margin: "12px 0",
     padding: "16px",
     boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+  },
+  actionsRow: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "flex-end",
+    gap: "8px",
+    width: "100%",
+    marginTop: "8px",
   },
   icon: {
     marginRight: "20px",
@@ -82,6 +91,7 @@ export const GET_PAYMENT_METHODS = gql`
       id
       method
       isActive
+      createdAt
     }
   }
 `;
@@ -92,6 +102,7 @@ export const SET_ACTIVE_PAYMENT_METHOD = gql`
       id
       method
       isActive
+      createdAt
     }
   }
 `;
@@ -102,6 +113,7 @@ const ADD_PAYMENT_METHOD = gql`
       id
       method
       isActive
+      createdAt
     }
   }
 `;
@@ -246,7 +258,7 @@ const PaymentMethods = ({ parentId }: { parentId: number }) => {
             </ListItemIcon>
             <ListItemText
               primary={method.method}
-              secondary={method.isActive ? "Active" : "Inactive"}
+              secondary={`${method.isActive ? "Active" : "Inactive"} · Added ${new Date(method.createdAt).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })}`}
               primaryTypographyProps={{ className: classes.primaryText }}
               secondaryTypographyProps={{
                 className: method.isActive
@@ -255,23 +267,23 @@ const PaymentMethods = ({ parentId }: { parentId: number }) => {
               }}
             />
             {!method.isActive && (
-              <Button
-                variant="contained"
-                className={classes.button}
-                onClick={() => handleActivate(method.id)}
-                size="small"
-              >
-                Activate
-              </Button>
-            )}
-            {!method.isActive && (
-              <IconButton
-                className={classes.deleteButton}
-                onClick={() => handleDeleteMethod(method.id)}
-                size="small"
-              >
-                <DeleteIcon />
-              </IconButton>
+              <div className={classes.actionsRow}>
+                <Button
+                  variant="contained"
+                  className={classes.button}
+                  onClick={() => handleActivate(method.id)}
+                  size="small"
+                >
+                  Activate
+                </Button>
+                <IconButton
+                  className={classes.deleteButton}
+                  onClick={() => handleDeleteMethod(method.id)}
+                  size="small"
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </div>
             )}
           </ListItem>
         ))}
