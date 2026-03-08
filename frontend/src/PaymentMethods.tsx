@@ -130,7 +130,7 @@ const PaymentMethods = ({ parentId }: { parentId: number }) => {
                 paymentMethods: existing.paymentMethods.map((method: any) =>
                   method.id === activePaymentMethod.id
                     ? activePaymentMethod
-                    : method,
+                    : { ...method, isActive: false },
                 ),
               }
             : existing,
@@ -264,13 +264,15 @@ const PaymentMethods = ({ parentId }: { parentId: number }) => {
                 Activate
               </Button>
             )}
-            <IconButton
-              className={classes.deleteButton}
-              onClick={() => handleDeleteMethod(method.id)}
-              size="small"
-            >
-              <DeleteIcon />
-            </IconButton>
+            {!method.isActive && (
+              <IconButton
+                className={classes.deleteButton}
+                onClick={() => handleDeleteMethod(method.id)}
+                size="small"
+              >
+                <DeleteIcon />
+              </IconButton>
+            )}
           </ListItem>
         ))}
       </List>

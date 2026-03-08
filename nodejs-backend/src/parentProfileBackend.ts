@@ -58,6 +58,10 @@ export class ParentProfileBackend {
     }
 
     deletePaymentMethod(parentId: number, methodId: number) {
+        const target = this.allPaymentMethods.find(pm => pm.parentId === parentId && pm.id === methodId);
+        if (target?.isActive) {
+            throw new Error("Cannot delete the active payment method");
+        }
         return new ParentProfileBackend(this.allParentProfiles, this.allInvoices, this.allPaymentMethods.filter(paymentMethod => !(paymentMethod.parentId === parentId && paymentMethod.id === methodId)));
     }
 
