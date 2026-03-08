@@ -24,7 +24,7 @@ export const resolvers = {
     ) => {
       const existing = await profileRepository.retrievePaymentMethods(parentId);
       const isActive = existing.length === 0;
-      const paymentMethod = await profileRepository.createPaymentMethod({ id: 0, parentId, method, isActive });
+      const paymentMethod = await profileRepository.createPaymentMethod({ id: 0, parentId, method, isActive, createdAt: "" });
       return new ParentProfileBackend([], [], [paymentMethod]).paymentMethod(paymentMethod.id);
     },
     setActivePaymentMethod: async (

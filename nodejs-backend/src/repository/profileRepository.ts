@@ -11,7 +11,7 @@ export class ProfileRepository {
       paymentMethod.isActive,
     ]);
     const insertId = result.insertId;
-    return { ...paymentMethod, id: insertId };
+    return { ...paymentMethod, id: insertId, createdAt: new Date().toISOString() };
   }
 
   async retrievePaymentMethods(parentId: number): Promise<PaymentMethod[]> {
@@ -22,6 +22,7 @@ export class ProfileRepository {
       parentId: r.parent_id,
       method: r.method,
       isActive: r.is_active,
+      createdAt: r.created_at instanceof Date ? r.created_at.toISOString() : new Date(r.created_at).toISOString(),
     }));
   }
 
