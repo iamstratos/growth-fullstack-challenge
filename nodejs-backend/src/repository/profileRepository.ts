@@ -60,9 +60,9 @@ export class ProfileRepository {
     return results.map(([result]) => result.affectedRows);
   }
 
-  async deletePaymentMethod(methodId: number): Promise<boolean> {
-    const sql = "DELETE FROM payment_methods WHERE id = ?";
-    const [result] = await db.execute<mysql.ResultSetHeader>(sql, [methodId]);
+  async deletePaymentMethod(parentId: number, methodId: number): Promise<boolean> {
+    const sql = "DELETE FROM payment_methods WHERE id = ? AND parent_id = ?";
+    const [result] = await db.execute<mysql.ResultSetHeader>(sql, [methodId, parentId]);
     return result.affectedRows > 0;
   }
 }

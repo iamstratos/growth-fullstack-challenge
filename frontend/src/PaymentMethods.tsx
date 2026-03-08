@@ -107,8 +107,8 @@ const ADD_PAYMENT_METHOD = gql`
 `;
 
 const DELETE_PAYMENT_METHOD = gql`
-  mutation DeletePaymentMethod($parentId: Long!, $method: String!) {
-    deletePaymentMethod(parentId: $parentId, method: $method)
+  mutation DeletePaymentMethod($parentId: Long!, $methodId: Long!) {
+    deletePaymentMethod(parentId: $parentId, methodId: $methodId)
   }
 `;
 
@@ -156,7 +156,7 @@ const PaymentMethods = ({ parentId }: { parentId: number }) => {
           existing
             ? {
                 paymentMethods: existing.paymentMethods.filter(
-                  (m: any) => m.method !== variables?.method,
+                  (m: any) => m.id !== variables?.methodId,
                 ),
               }
             : existing,
@@ -191,10 +191,10 @@ const PaymentMethods = ({ parentId }: { parentId: number }) => {
     }
   };
 
-  const handleDeleteMethod = async (method: string) => {
+  const handleDeleteMethod = async (methodId: number) => {
     try {
       await deletePaymentMethod({
-        variables: { parentId, method },
+        variables: { parentId, methodId },
       });
       setErrorMessage("Payment method deleted successfully");
     } catch (error) {
@@ -266,7 +266,7 @@ const PaymentMethods = ({ parentId }: { parentId: number }) => {
             )}
             <IconButton
               className={classes.deleteButton}
-              onClick={() => handleDeleteMethod(method.method)}
+              onClick={() => handleDeleteMethod(method.id)}
               size="small"
             >
               <DeleteIcon />
