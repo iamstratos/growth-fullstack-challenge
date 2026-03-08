@@ -22,7 +22,9 @@ export const resolvers = {
       _: any,
       { parentId, method }: { parentId: number; method: string },
     ) => {
-      const paymentMethod = await profileRepository.createPaymentMethod({ id: 0, parentId, method, isActive: false });
+      const existing = await profileRepository.retrievePaymentMethods(parentId);
+      const isActive = existing.length === 0;
+      const paymentMethod = await profileRepository.createPaymentMethod({ id: 0, parentId, method, isActive });
       return new ParentProfileBackend([], [], [paymentMethod]).paymentMethod(paymentMethod.id);
     },
     setActivePaymentMethod: async (
@@ -35,10 +37,12 @@ export const resolvers = {
 
       return parentProfileBackend.paymentMethod(methodId);
     },
-    deletePaymentMethod: (
+    deletePaymentMethod: async (
       _: any,
       { parentId, methodId }: { parentId: number; methodId: number },
     ) => {
+      const methods = await profileRepository.retrievePaymentMethods(parentId);
+      new ParentProfileBackend([], [], methods).deletePaymentMethod(parentId, methodId);
       return profileRepository.deletePaymentMethod(parentId, methodId);
     },
   },

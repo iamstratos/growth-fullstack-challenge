@@ -71,13 +71,33 @@ describe("Parent profile backend", () => {
       .toContainEqual({ id: 2, parentId: 1, method: "Debit Card", isActive: true })
     });
 
-    it("When a payment method is deleted it should go away, because we don't want to keep payment methods around due to privacy concerns", () => {
+    it("When an inactive payment method is deleted it should go away, because we don't want to keep payment methods around due to privacy concerns", () => {
       expect(parentProfileBackend
         .createParentProfile("Alice", "Bob")
         .createPaymentMethod(1, "Credit Card", true)
-        .deletePaymentMethod(1, 1)
+        .createPaymentMethod(1, "Debit Card", false)
+        .deletePaymentMethod(1, 2)
         .paymentMethods(1))
-      .not.toContainEqual({ id: 1, parentId: 1, method: "Credit Card", isActive: true })
+      .not.toContainEqual({ id: 2, parentId: 1, method: "Debit Card", isActive: false })
+    });
+
+    it("When deleting the active payment method, it should throw an error, because there must always be one active payment method", () => {
+      expect(() => parentProfileBackend
+        .createParentProfile("Alice", "Bob")
+        .createPaymentMethod(1, "Credit Card", true)
+        .deletePaymentMethod(1, 1))
+      .toThrow("Cannot delete the active payment method")
+    });
+
+    it("When deleting an inactive payment method, the active one should remain, so the invariant of always having one active method holds", () => {
+      const result = parentProfileBackend
+        .createParentProfile("Alice", "Bob")
+        .createPaymentMethod(1, "Credit Card", true)
+        .createPaymentMethod(1, "Debit Card", false)
+        .deletePaymentMethod(1, 2)
+        .paymentMethods(1);
+      expect(result).toContainEqual({ id: 1, parentId: 1, method: "Credit Card", isActive: true });
+      expect(result).toHaveLength(1);
     });
 
     it("When setting a payment method active, it should deactivate the current active one and activate the new one, so that we don't have multiple active payment methods", () => {
