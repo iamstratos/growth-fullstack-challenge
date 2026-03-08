@@ -19,6 +19,17 @@ export  interface Invoice {
     date: string;
 }
 
+export interface PaymentMethodAuditLog {
+    id: number;
+    paymentMethodId: number | null;
+    parentId: number;
+    action: string;
+    oldState: object | null;
+    newState: object | null;
+    changedBy: string;
+    changedAt: string;
+}
+
 export class ParentProfileBackend {
     private readonly allParentProfiles: ParentProfile[];
     private readonly allInvoices: Invoice[];
