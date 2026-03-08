@@ -9,6 +9,8 @@ import {
   Typography,
   TextField,
   IconButton,
+  Snackbar,
+  SnackbarContent,
 } from "@material-ui/core";
 import CreditCardIcon from "@material-ui/icons/CreditCard";
 import DeleteIcon from "@material-ui/icons/Delete";
@@ -113,40 +115,103 @@ const DELETE_PAYMENT_METHOD = gql`
 const PaymentMethods = ({ parentId }: { parentId: number }) => {
   const classes = useStyles();
   const [newMethod, setNewMethod] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
   const { loading, data } = useQuery(GET_PAYMENT_METHODS, {
     variables: { parentId },
   });
-  const [setActivePaymentMethod] = useMutation(SET_ACTIVE_PAYMENT_METHOD);
-  const [addPaymentMethod] = useMutation(ADD_PAYMENT_METHOD);
-  const [deletePaymentMethod] = useMutation(DELETE_PAYMENT_METHOD);
+  const [setActivePaymentMethod] = useMutation(SET_ACTIVE_PAYMENT_METHOD, {
+    update(cache, { data: { setActivePaymentMethod: activePaymentMethod } }) {
+      cache.updateQuery(
+        { query: GET_PAYMENT_METHODS, variables: { parentId } },
+        (existing) =>
+          existing
+            ? {
+                paymentMethods: existing.paymentMethods.map((method: any) =>
+                  method.id === activePaymentMethod.id
+                    ? activePaymentMethod
+                    : method,
+                ),
+              }
+            : existing,
+      );
+    },
+  });
+  const [addPaymentMethod] = useMutation(ADD_PAYMENT_METHOD, {
+    update(cache, { data: { addPaymentMethod: newPaymentMethod } }) {
+      cache.updateQuery(
+        { query: GET_PAYMENT_METHODS, variables: { parentId } },
+        (existing) =>
+          existing
+            ? { paymentMethods: [...existing.paymentMethods, newPaymentMethod] }
+            : existing,
+      );
+    },
+  });
+  const [deletePaymentMethod] = useMutation(DELETE_PAYMENT_METHOD, {
+    update(cache, _, { variables }) {
+      cache.updateQuery(
+        { query: GET_PAYMENT_METHODS, variables: { parentId } },
+        (existing) =>
+          existing
+            ? {
+                paymentMethods: existing.paymentMethods.filter(
+                  (m: any) => m.method !== variables?.method,
+                ),
+              }
+            : existing,
+      );
+    },
+  });
 
   if (loading) return <p>Loading...</p>;
 
-  const handleActivate = (methodId: number) => {
-    setActivePaymentMethod({
-      variables: { parentId, methodId },
-    });
-  };
-
-  const handleAddMethod = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (newMethod.trim()) {
-      addPaymentMethod({
-        variables: { parentId, method: newMethod.trim() },
-      }).then(() => {
-        setNewMethod("");
+  const handleActivate = async (methodId: number) => {
+    try {
+      await setActivePaymentMethod({
+        variables: { parentId, methodId },
       });
+      setErrorMessage("Payment method activated successfully");
+    } catch (error) {
+      setErrorMessage("Failed to activate payment method");
     }
   };
 
-  const handleDeleteMethod = (method: string) => {
-    deletePaymentMethod({
-      variables: { parentId, method },
-    });
+  const handleAddMethod = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newMethod.trim() === "") return;
+    try {
+      await addPaymentMethod({
+        variables: { parentId, method: newMethod.trim() },
+      });
+      setNewMethod("");
+      setErrorMessage("Payment method added successfully");
+    } catch (error) {
+      setErrorMessage("Failed to add payment method");
+    }
+  };
+
+  const handleDeleteMethod = async (method: string) => {
+    try {
+      await deletePaymentMethod({
+        variables: { parentId, method },
+      });
+      setErrorMessage("Payment method deleted successfully");
+    } catch (error) {
+      setErrorMessage("Failed to delete payment method");
+    }
   };
 
   return (
     <div className={classes.container}>
+      <Snackbar
+        open={errorMessage !== ""}
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+        onClose={() => setErrorMessage("")}
+      >
+        <SnackbarContent message={errorMessage} />
+      </Snackbar>
       <div className={classes.header}>
         <div>
           <Typography variant="h5">Payment Methods</Typography>
