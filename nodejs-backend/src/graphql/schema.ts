@@ -2,6 +2,7 @@ import { gql } from "apollo-server-express";
 
 export const typeDefs = gql`
   scalar Long
+  scalar JSON
 
   type ParentProfile {
     id: Long!
@@ -24,10 +25,22 @@ export const typeDefs = gql`
     date: String!
   }
 
+  type PaymentMethodAuditLog {
+    id: Long!
+    paymentMethodId: Long
+    parentId: Long!
+    action: String!
+    oldState: JSON
+    newState: JSON
+    changedBy: String!
+    changedAt: String!
+  }
+
   type Query {
     parentProfile(parentId: Long!): ParentProfile
     paymentMethods(parentId: Long!): [PaymentMethod]
     invoices(parentId: Long!): [Invoice]
+    paymentMethodAuditLog(parentId: Long!): [PaymentMethodAuditLog]
   }
 
   type Mutation {
